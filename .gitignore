@@ -19,3 +19,12 @@ frontend/build/
 .DS_Store
 *.env
 .env.*
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Instance folder for Flask
+instance/
+backend/instance/

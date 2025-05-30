@@ -1,40 +1,39 @@
 // frontend/src/App.jsx
-import React, { useState, useEffect } from 'react';
-import axios from 'axios'; // Import axios
-import './App.css';
+import React from 'react';
+// Make sure BrowserRouter is imported as Router or used directly
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import HomePage from './pages/HomePage';
+import LoginPage from './pages/LoginPage';
+import SignupPage from './pages/SignupPage'; // Your SignupPage component
+import DashboardPage from './pages/DashboardPage';
+import Navbar from './components/Navbar';
+import ProtectedRoute from './components/ProtectedRoute';
+import './App.css'; // Your global styles
 
 function App() {
-  const [messageFromApi, setMessageFromApi] = useState('');
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    // The URL of your Flask API endpoint
-    const apiUrl = 'http://localhost:5001/api/message';
-
-    axios.get(apiUrl)
-      .then(response => {
-        setMessageFromApi(response.data.message);
-        setLoading(false);
-      })
-      .catch(error => {
-        console.error("There was an error fetching data!", error);
-        setError("Failed to load message from API. Is the backend running?");
-        setLoading(false);
-      });
-  }, []); // The empty array [] means this effect runs once after the initial render
-
   return (
-    <div>
-      <h1>Welcome to Our Rental Finder!</h1>
-      <p>This is the future user page where you can find apartments.</p>
-      <hr />
-      <h2>Message from Backend:</h2>
-      {loading && <p>Loading message...</p>}
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      {!loading && !error && messageFromApi && <p>{messageFromApi}</p>}
-      {!loading && !error && !messageFromApi && <p>No message received.</p>}
-    </div>
+    // 1. BrowserRouter (often aliased as Router) wraps everything
+    <Router>
+      <Navbar /> {/* Navbar uses Link and useNavigate, so it also needs to be within Router */}
+      <div className="container" style={{ padding: '20px' }}>
+        {/* 2. Routes component groups all your individual Route definitions */}
+        <Routes>
+          {/* 3. Each Route maps a path to an element (your page component) */}
+          <Route path="/" element={<HomePage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignupPage />} /> {/* SignupPage is rendered here */}
+
+          {/* Protected Routes wrapper */}
+          <Route element={<ProtectedRoute />}>
+            <Route path="/dashboard" element={<DashboardPage />} />
+            {/* Add other protected routes here later */}
+          </Route>
+
+          {/* Optional: Redirect to home if no route matches */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 

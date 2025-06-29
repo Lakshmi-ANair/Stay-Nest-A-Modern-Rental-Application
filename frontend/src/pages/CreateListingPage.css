@@ -1,0 +1,99 @@
+.create-listing-container {
+    padding: 40px 20px;
+    background-color: var(--bg-page);
+    display: flex;
+    justify-content: center;
+    min-height: calc(100vh - var(--navbar-height));
+}
+
+.create-listing-card {
+    width: 100%;
+    max-width: 800px;
+    background-color: var(--bg-container);
+    padding: 30px 40px;
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+}
+
+.create-listing-card h1 {
+    font-size: 2rem;
+    color: var(--text-primary);
+    margin-bottom: 10px;
+}
+.create-listing-card > p {
+    color: var(--text-secondary);
+    margin-bottom: 30px;
+}
+
+.form-section {
+    margin-bottom: 25px;
+}
+.form-section > label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.form-section input[type="text"],
+.form-section input[type="number"],
+.form-section input[type="url"],
+.form-section textarea,
+.form-section select {
+    width: 100%;
+    padding: 12px;
+    background-color: var(--input-bg);
+    border: 1px solid var(--input-border);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-size: 1rem;
+    margin-bottom: 10px;
+}
+
+.form-section textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.amenities-checkbox-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+}
+.checkbox-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: var(--input-bg);
+    padding: 10px;
+    border-radius: 6px;
+}
+.checkbox-item input[type="checkbox"] {
+    width: auto;
+}
+.checkbox-item label {
+    font-weight: 500;
+}
+
+.submit-button {
+    width: 100%;
+    padding: 15px;
+    background-color: var(--accent-color);
+    color: var(--button-text-color);
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    margin-top: 10px;
+}
+.submit-button:hover {
+    background-color: var(--accent-color-darker);
+}

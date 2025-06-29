@@ -1,0 +1,205 @@
+.booking-widget {
+  flex: 1;
+  padding: 20px;
+  border: 1px solid var(--input-border);
+  border-radius: 12px;
+  background-color: var(--bg-container);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  position: sticky;
+  top: 100px;
+  align-self: flex-start;
+}
+
+.mode-toggle {
+  display: flex;
+  background-color: var(--input-bg);
+  border-radius: 8px;
+  padding: 4px;
+  margin-bottom: 20px;
+}
+
+.mode-button {
+  flex: 1;
+  padding: 10px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.mode-button.active {
+  background-color: var(--bg-container);
+  color: var(--text-primary);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.widget-content h3 {
+  text-align: center;
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-size: 1.5rem;
+}
+.widget-content h4 {
+  font-size: 1.1rem;
+  margin-top: 20px;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.date-picker-container {
+  display: flex;
+  justify-content: center;
+}
+
+
+.react-datepicker {
+  width: 100%;
+  border: none !important;
+  background-color: transparent !important;
+  font-family: var(--font-family-sans) !important;
+}
+.react-datepicker__month-container {
+  width: 100%;
+}
+.react-datepicker__header {
+  background-color: transparent !important;
+  border-bottom: none !important;
+}
+.custom-datepicker-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.datepicker-nav-button {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+.datepicker-nav-button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+.react-datepicker__day-names {
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+}
+.react-datepicker__day-name, .react-datepicker__day {
+  color: var(--text-secondary) !important;
+  line-height: 2rem;
+  width: 2rem;
+}
+.react-datepicker__day {
+  color: var(--text-primary) !important;
+}
+.react-datepicker__day:hover {
+  background-color: var(--input-bg) !important;
+  border-radius: 50%;
+}
+.react-datepicker__day--selected, .react-datepicker__day--in-range {
+  background-color: var(--accent-color) !important;
+  color: white !important;
+  border-radius: 50%;
+}
+.react-datepicker__day--range-start, .react-datepicker__day--range-end {
+  background-color: var(--accent-color-darker) !important;
+}
+.react-datepicker__day--disabled {
+  opacity: 0.3;
+}
+
+
+.time-slots-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.time-slot-button {
+  padding: 10px;
+  border: 1px solid var(--input-border);
+  background-color: transparent;
+  color: var(--text-primary);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.time-slot-button:hover {
+  border-color: var(--accent-color);
+}
+.time-slot-button.selected {
+  background-color: var(--accent-color);
+  color: white;
+  border-color: var(--accent-color);
+}
+
+.price-calculation {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid var(--input-border);
+}
+.price-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  color: var(--text-secondary);
+}
+.price-row.total {
+  font-weight: bold;
+  font-size: 1.1rem;
+  color: var(--text-primary);
+}
+
+.main-action-button {
+  width: 100%;
+  padding: 15px;
+  background-color: var(--accent-color);
+  color: var(--button-text-color);
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin-top: 10px;
+}
+.main-action-button:hover {
+  background-color: var(--accent-color-darker);
+}
+.main-action-button:disabled {
+  background-color: var(--input-border);
+  color: var(--text-secondary);
+  cursor: not-allowed;
+}
+
+.dealer-info {
+  margin-top: 25px;
+  padding-top: 20px;
+  border-top: 1px solid var(--input-border);
+}
+.dealer-info h4 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-size: 1.1rem;
+}
+.dealer-info p {
+  margin: 8px 0;
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+}
+.dealer-info a {
+  color: var(--link-color);
+  text-decoration: none;
+}
+.dealer-info a:hover {
+  text-decoration: underline;
+}

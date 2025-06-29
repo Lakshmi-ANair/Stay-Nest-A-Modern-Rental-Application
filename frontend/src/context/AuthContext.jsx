@@ -1,92 +1,105 @@
-// frontend/src/context/AuthContext.jsx
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const AuthContext = createContext();
-
-const API_URL = 'http://localhost:5001/api/auth'; // Your backend API URL
+axios.defaults.baseURL = 'http://localhost:5001';
 
 export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(null); // User object or null
-    const [token, setToken] = useState(localStorage.getItem('token')); // Get token from localStorage
-    const [loading, setLoading] = useState(true); // To handle initial auth check
+    const [user, setUser] = useState(() => {
+        try {
+            const userJson = localStorage.getItem('user');
+            return userJson ? JSON.parse(userJson) : null;
+        } catch (error) {
+            console.error("Failed to parse user from localStorage", error);
+            return null;
+        }
+    });
+    const [token, setToken] = useState(() => localStorage.getItem('token'));
+    const [loading, setLoading] = useState(true);
+    const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'dark');
+    const [dashboardRefetchTrigger, setDashboardRefetchTrigger] = useState(0);
+    const navigate = useNavigate();
 
-    axios.defaults.baseURL = 'http://localhost:5001'; // Optional: Set base URL for axios
-    if (token) {
-        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-    }
-
-    useEffect(() => {
-        const verifyToken = async () => {
-            if (token) {
-                try {
-                    // You might want an endpoint like /api/auth/me or /api/auth/verify
-                    // For now, let's assume if token exists, we try to fetch some user data
-                    // Or, you can decode the token client-side (not as secure for user data, but ok for expiry check)
-                    // For this example, we'll just set the user if a token exists
-                    // A better approach is to verify the token with the backend.
-                    // Let's create a simple /api/me endpoint on the backend.
-
-                    // If you have a /api/me endpoint that returns user info based on token:
-                    const response = await axios.get('/api/protected'); // Using our existing protected route
-                    setUser({ email: response.data.logged_in_as }); // Adjust based on what /me returns
-                } catch (error) {
-                    console.error("Token verification failed or token expired", error);
-                    localStorage.removeItem('token');
-                    localStorage.removeItem('user');
-                    setToken(null);
-                    setUser(null);
-                    delete axios.defaults.headers.common['Authorization'];
-                }
-            }
-            setLoading(false);
-        };
-        verifyToken();
-    }, [token]);
-
+    const triggerDashboardRefetch = () => {
+        setDashboardRefetchTrigger(prev => prev + 1);
+    };
 
     const login = async (email, password) => {
-        try {
-            const response = await axios.post(`${API_URL}/login`, { email, password });
-            const { access_token, user_id, email: userEmail, firstName } = response.data;
-            localStorage.setItem('token', access_token);
-            localStorage.setItem('user', JSON.stringify({ id: user_id, email: userEmail, firstName })); // Store some user info
-            setToken(access_token);
-            setUser({ id: user_id, email: userEmail, firstName });
-            axios.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
-            return response.data;
-        } catch (error) {
-            console.error("Login failed:", error.response ? error.response.data : error.message);
-            throw error.response ? error.response.data : new Error("Login failed");
-        }
+        const response = await axios.post('/api/auth/login', { email, password });
+        const { access_token, refresh_token, user: userData } = response.data;
+        localStorage.setItem('token', access_token);
+        localStorage.setItem('refresh_token', refresh_token);
+        localStorage.setItem('user', JSON.stringify(userData));
+        axios.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
+        setToken(access_token);
+        setUser(userData);
+        return userData;
     };
 
-    const signup = async (userData) => {
-        try {
-            const response = await axios.post(`${API_URL}/register`, userData);
-            // Optionally log them in directly after signup
-            // await login(userData.email, userData.password);
-            return response.data;
-        } catch (error) {
-            console.error("Signup failed:", error.response ? error.response.data : error.message);
-            throw error.response ? error.response.data : new Error("Signup failed");
-        }
-    };
-
-    const logout = () => {
-        localStorage.removeItem('token');
+    const logout = useCallback(() => {
         localStorage.removeItem('user');
+        localStorage.removeItem('token');
+        localStorage.removeItem('refresh_token');
         setToken(null);
         setUser(null);
         delete axios.defaults.headers.common['Authorization'];
-        // Optionally, call a backend /logout endpoint if you have token blacklisting
+        navigate('/auth');
+    }, [navigate]);
+    
+    const signup = async ({ email, password, firstName, lastName }) => {
+        const response = await axios.post('/api/auth/register', { email, password, firstName, lastName });
+        if (response.status !== 201) { throw new Error(response.data?.msg || "Signup failed"); }
+        return true;
     };
 
-    return (
-        <AuthContext.Provider value={{ user, token, login, signup, logout, loading }}>
-            {children}
-        </AuthContext.Provider>
-    );
+    const updateUserPreferencesFlag = () => {
+        if(user) {
+            const updatedUser = { ...user, has_set_preferences: true };
+            setUser(updatedUser);
+            localStorage.setItem('user', JSON.stringify(updatedUser));
+        }
+    };
+
+    useEffect(() => {
+        if (token) { axios.defaults.headers.common['Authorization'] = `Bearer ${token}`; }
+        setLoading(false);
+    }, [token]);
+
+    useEffect(() => {
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('theme', theme);
+    }, [theme]);
+    
+    const toggleTheme = () => { setTheme(prevTheme => prevTheme === 'light' ? 'dark' : 'light'); };
+    
+    useEffect(() => {
+        const responseInterceptor = axios.interceptors.response.use(r => r, async (error) => {
+            const originalRequest = error.config;
+            if (error.response?.status === 401 && !originalRequest._retry) {
+                originalRequest._retry = true;
+                const refreshToken = localStorage.getItem('refresh_token');
+                if (!refreshToken) { logout(); return Promise.reject(error); }
+                try {
+                    const { data } = await axios.post('/api/auth/refresh', {}, { headers: { Authorization: `Bearer ${refreshToken}` } });
+                    localStorage.setItem('token', data.access_token); setToken(data.access_token);
+                    axios.defaults.headers.common['Authorization'] = `Bearer ${data.access_token}`;
+                    originalRequest.headers['Authorization'] = `Bearer ${data.access_token}`;
+                    return axios(originalRequest);
+                } catch (refreshError) { logout(); return Promise.reject(refreshError); }
+            }
+            return Promise.reject(error);
+        });
+        return () => axios.interceptors.response.eject(responseInterceptor);
+    }, [logout]);
+
+    const value = { 
+        user, token, loading, theme, toggleTheme, 
+        login, logout, signup, updateUserPreferencesFlag,
+        dashboardRefetchTrigger, triggerDashboardRefetch
+    };
+
+    return (<AuthContext.Provider value={value}>{children}</AuthContext.Provider>);
 };
 
 export default AuthContext;

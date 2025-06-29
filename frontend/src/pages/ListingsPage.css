@@ -1,0 +1,48 @@
+.listings-page-background {
+  background-color: var(--bg-page);
+  min-height: calc(100vh - var(--navbar-height));
+  padding: 40px 20px;
+  box-sizing: border-box;
+}
+
+.listings-page-container {
+  max-width: 1400px; 
+  margin: 0 auto;
+  display: flex;
+  gap: 30px; 
+  align-items: flex-start; 
+}
+
+.listings-content-area {
+  flex: 1; 
+}
+
+.listings-header {
+  margin-bottom: 30px;
+}
+
+.listings-header h1 {
+  font-size: 2rem;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.listings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 30px;
+}
+
+.no-results {
+  background-color: var(--bg-container);
+  padding: 50px;
+  border-radius: 12px;
+  text-align: center;
+  color: var(--text-secondary);
+  border: 1px solid var(--input-border);
+}
+
+.no-results h2 {
+  color: var(--text-primary);
+  margin-top: 0;
+}
